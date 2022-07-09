@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>This is the title of the webpage!</title>
+    <style>
+      .box {
+        width: 50px;
+        height: 50px;
+        background-color: cadetblue;
+        margin: 5px;
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Լյուբոյ</p>
+    <button id="btn">Add Div</button>
+    <div id="container">
+      <span>text</span>
+    </div>
+
+    <script>
+      function getRandomColorComponent() {
+        return Math.round((Math.random() * 1000) % 255)
+      }
+
+      function getRandomColor() {
+        return (
+          "rgb(" +
+          getRandomColorComponent() +
+          ", " +
+          getRandomColorComponent() +
+          ", " +
+          getRandomColorComponent() +
+          ")"
+        )
+      }
+
+      function changeDivColor(event) {
+        
+        event.target.style.backgroundColor = getRandomColor()
+      }
+ 
+  
+      function addNewDiv() {
+        const containerNode = document.getElementById("container")
+
+        const divs = document.getElementsByClassName("box")
+
+        const div = document.createElement("div")
+        div.className = "box"
+        div.innerText = divs.length
+        div.onmouseover = changeDivColor
+        containerNode.append(div)
+      }
+
+      btn.onclick = function () {
+        addNewDiv()
+        
+      }
+    
+    function deleteDivsOnCLick(){
+        const container= document.getElementById("container")
+        container.addEventListener('click', function (e) {
+        if (e.target.classList.contains('box')) {
+                 e.target.remove()
+        }
+  });
+     
+    }
+    deleteDivsOnCLick()
+
+    function deleteDivsOnKeyDown (){
+    const divs = document.querySelectorAll(".box")
+    for(let i = 0; i< divs.length; i++){
+    if(event.key==divs.item(i).innerHTML){
+        divs.item(i).remove()
+    }
+ }
+}
+window.onkeydown = deleteDivsOnKeyDown
+
+
+    </script>
+  </body>
+</html>

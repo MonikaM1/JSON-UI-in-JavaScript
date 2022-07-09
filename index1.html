@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>This is the title of the webpage!</title>
+    <style>
+      .box {
+        width: 50px;
+        height: 50px;
+        background-color: cadetblue;
+        margin: 5px;
+        float: left;
+      }
+    </style>
+  </head>
+  <body>
+    <p>Լյուբոյ</p>
+    
+    <button id="checkAll">Check All</button>
+    <button id="checkNone">Check None</button>
+    <button id="delete">Delete items</button>
+    <button id="sort">SORT</button>
+    <button id="btnShowJson">Show JOSN</button><br>
+    <label for="search" type="search">Search</label>
+      <input type="text" id="search">
+    <div id="container">
+      <ul id="list"></ul>
+      <input id="newItem" type="text" />
+      <button id="addBtn">Add this</button>
+      
+    </div>
+
+    <script>
+
+
+
+let json = [{
+        userId: 1,
+        id: 1,
+        title: "delectus aut autem",
+        completed: true,
+    },
+    {
+        userId: 1,
+        id: 2,
+        title: "quis ut nam facilis et officia qui",
+        completed: false,
+    },
+    {
+        userId: 1,
+        id: 3,
+        title: "fugiat veniam minus",
+        completed: false,
+    },
+    {
+        userId: 1,
+        id: 4,
+        title: "et porro tempora",
+        completed: true,
+    },
+    {
+        userId: 1,
+        id: 5,
+        title: "laboriosam mollitia et enim quasi adipisci quia provident illum",
+        completed: false,
+    },
+    {
+        userId: 1,
+        id: 6,
+        title: "qui ullam ratione quibusdam voluptatem quia omnis",
+        completed: false,
+    },
+    {
+        userId: 1,
+        id: 7,
+        title: "illo expedita consequatur quia in",
+        completed: false,
+    },
+]
+
+function generateLiElement(item) {
+    const li = document.createElement("li")
+
+    const span = document.createElement("span")
+    span.innerText = item.title
+
+    const checkbox = document.createElement("input")
+    checkbox.type = "checkbox"
+    checkbox.checked = item.completed
+    checkbox.onchange = function(e) {
+        item.completed = e.target.checked
+    }
+
+    li.append(span, checkbox)
+    return li
+}
+
+function appendToUl(li) {
+    const ul = document.getElementById("list")
+    ul.append(li)
+}
+
+function drawItems(data) {
+    const containerNode = document.getElementById("container")
+    data.map(generateLiElement).forEach(appendToUl)
+}
+
+function getArticlesFromDB() {
+    // fake it till you make it
+    // use fetch API for real API requests
+    drawItems(json)
+}
+getArticlesFromDB()
+
+function showJsonBtnEvent() {
+    const btn = document.getElementById("btnShowJson")
+    btn.onclick = function() {
+        console.log("CURRENT JSON STATUS")
+        console.log(json.map((item) => item.completed))
+    }
+}
+
+showJsonBtnEvent()
+
+function lastId() {
+    return json[json.length-1].id
+}
+function addNewItemBtnEvent() {
+    const btn = document.getElementById("addBtn")
+    const newItemNode = document.getElementById("newItem")
+
+    function add() {
+        const newItem = {
+            userId: 1,
+            id: lastId() + 1,
+            title: newItemNode.value,
+            completed: false,
+        }
+        json.push(newItem)
+        const newLi = generateLiElement(newItem)
+        appendToUl(newLi)
+        newItemNode.value = ""
+    }
+    btn.onclick = add
+    newItemNode.onkeydown = function() {
+        if (event.key === "Enter") {
+            add()
+            console.log(json)
+        }
+
+
+    }
+}
+addNewItemBtnEvent()
+
+
+// function sortArray(array) {
+// array.sort(function(item1, item2) {
+//         const title1 = item1.title.toUpperCase()
+//         const title2 = item2.title.toUpperCase()
+//         if (title1 < title2) {
+//             return -1;
+//         }
+//         if (title1 > title2) {
+//             return 1;
+//         }
+//         return 0;
+//     })
+    
+// }
+// sortArray(json)
+
+function sortItemsByAlphabet(){
+const btn=document.getElementById("sort")
+btn.onclick=function(){
+    const list = document.getElementById("list")
+    json.sort(function(item1, item2) {
+        const title1 = item1.title.toUpperCase()
+        const title2 = item2.title.toUpperCase()
+        if (title1 < title2) {
+            return -1;
+        }
+        if (title1 > title2) {
+            return 1;
+        }
+        return 0;
+    })
+    list.innerHTML = ""
+    getArticlesFromDB()
+}
+
+    
+}
+
+
+function changeStatusOfCheckbox(btn, status) {
+   
+    btn.onclick = function() {
+        const checkboxes = document.querySelectorAll("input[type=checkbox]")
+        json.map((item) => item.completed = status)
+        for (let i = 0; i < checkboxes.length; i++) {
+            checkboxes[i].checked = status
+          
+        }
+        console.log(btn)
+    }
+}
+
+function checkAll() {
+    const btn = document.getElementById("checkAll")
+    changeStatusOfCheckbox(btn, true)
+
+}
+
+
+function checkNone() {
+    const btn = document.getElementById("checkNone")
+    changeStatusOfCheckbox(btn, false)
+}
+
+
+function deleteChekedItems() {
+    const btn = document.getElementById("delete")
+    
+    btn.onclick = function() {
+        const list = document.getElementById("list")
+        const filterCompleted = item => item.completed === false
+        json = json.filter(filterCompleted)
+        list.innerHTML = ""
+        drawItems(json)
+        console.log(json)
+        
+    }
+}
+
+const searchInput=document.getElementById("search")
+searchInput.onkeyup=searchText
+function searchText(){
+
+    let text=searchInput.value.toLowerCase()
+    const list=document.getElementById("list")
+    const li=list.getElementsByTagName("li")
+    for  (let i=0;i<li.length;i++){
+        if(li[i].innerHTML.toLowerCase().indexOf(text)>-1){
+            li[i].style.display="list-item"
+        }
+        else{
+            li[i].style.display="none"
+        }
+        }
+    }
+
+
+//     function search(){
+//     const list=document.getElementById("list")
+//         const searchInput=document.getElementById("search")
+//         let text=searchInput.value.toLowerCase()
+//         let title=json.map((item) => item.title)
+//         var arr = json.filter(function (el){
+//  if(el.title.indexOf(text)>-1){
+//      let arr=[]
+//      arr.push(el)
+//      console.log(arr)
+//      list.innerHTML=""
+//      drawItems(arr)
+//  }
+//  else{
+//      list.innerHTML=""
+//      drawItems(json)
+//  }
+    
+// })
+        
+//     }
+
+
+
+
+
+
+deleteChekedItems()
+checkAll()
+checkNone()
+sortItemsByAlphabet()
+
+
+    </script>
+  </body>
+</html>
